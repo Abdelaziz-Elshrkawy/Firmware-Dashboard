@@ -10,21 +10,24 @@ import (
 )
 
 // database instance for the app
-var DB *sql.DB 
+var DB *sql.DB
 
-func Connect() (error) {
+func Connect() error {
 	uri := fmt.Sprintf("%s:%s@tcp(127.0.0.1:3306)/%s", env.DBuser, env.DBpassword, env.DBname)
 
-	DB, err := sql.Open("mysql", uri)
+	var err error
+	DB, err = sql.Open("mysql", uri)
 
 	if err != nil {
-		return  err
+		return err
 	}
 
 	if err := DB.Ping(); err != nil {
 		log.Fatal("Database ping error:", err)
-		return  err
+		return err
 	}
+
+	fmt.Println("Database Connected")
 
 	return nil
 }

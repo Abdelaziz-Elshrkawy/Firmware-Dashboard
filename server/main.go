@@ -1,11 +1,14 @@
 package main
 
 import (
+	"firmware_server/appMqtt"
 	"firmware_server/controllers"
 	"firmware_server/database"
+	"firmware_server/server"
 	"fmt"
 
-	fiber "github.com/gofiber/fiber/v3"
+	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"github.com/gofiber/fiber/v3"
 )
 
 func main() {
@@ -13,17 +16,21 @@ func main() {
 	// initializing database
 	database.Connect()
 
+	server.Init()
 
-	app := fiber.New()
+	appMqtt.InitMqtt()
 
-	app.Get("/", func(c fiber.Ctx) error {
-
+	server.App.Get("/", func(c fiber.Ctx) error {
 		return c.SendString("Hello")
 	})
 
-	controllers.RegisterControllers(app)
+	appMqtt.Client.Subscribe("test/topic", 0, func(client mqtt.Client, msg mqtt.Message) {
+		fmt.Printf("Received message on topic: %s: %s %d\n", msg.Topic(), string(msg.Payload()), msg.Qos())
+	})
 
-	if err := app.Listen(":3000"); err != nil {
+	controllers.RegisterControllers()
+
+	if err := server.App.Listen(":3000"); err != nil {
 		fmt.Println("Server failed to start:", err)
 	}
 }
