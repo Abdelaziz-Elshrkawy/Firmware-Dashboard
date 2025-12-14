@@ -1,5 +1,6 @@
 package controllers
 
 func RegisterControllers() {
-	ProductRoute()
+	productRoute()
+	devicesRoute()
 }

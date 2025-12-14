@@ -25,7 +25,7 @@ func main() {
 	})
 
 	appMqtt.Client.Subscribe("test/topic", 0, func(client mqtt.Client, msg mqtt.Message) {
-		fmt.Printf("Received message on topic: %s: %s %d\n", msg.Topic(), string(msg.Payload()), msg.Qos())
+		fmt.Printf("Received message on topic: %s: %s\n", msg.Topic(), string(msg.Payload()))
 	})
 
 	controllers.RegisterControllers()
@@ -33,4 +33,5 @@ func main() {
 	if err := server.App.Listen(":3000"); err != nil {
 		fmt.Println("Server failed to start:", err)
 	}
+
 }

@@ -20,7 +20,6 @@ func InitMqtt() error {
 
 	if token := Client.Connect(); token.Wait() && token.Error() != nil {
 		fmt.Println("Error connecting to broker:", token.Error())
-		fmt.Println(Client.IsConnected())
 		return token.Error()
 	}
 
