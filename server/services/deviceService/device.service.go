@@ -1,38 +1,38 @@
 package deviceService
 
 import (
-	"database/sql"
 	"errors"
 	"firmware_server/database"
 	"firmware_server/tables"
 	"firmware_server/tables/tablesName"
 	"fmt"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 func GetDevice(id *int) ([]tables.Device, error) {
-	var res *sql.Rows
-	var err error
+
 	var query string
 	if id != nil {
-		query = fmt.Sprintf("select * from %s where id = ?", tablesName.Devices)
-		res, err = database.DB.Query(query, id)
+		query = fmt.Sprintf("select id, firmware_id, product_id, serial, api_key from %s where id = %d", tablesName.Devices, *id)
 	} else {
-		query = fmt.Sprintf("select * from %s where", tablesName.Devices)
-		res, err = database.DB.Query(query)
+		query = fmt.Sprintf("select id, firmware_id, product_id, serial, api_key from %s", tablesName.Devices)
 	}
 
-	defer res.Close()
+	res, err := database.DB.Query(query)
 
 	if err != nil {
 		return nil, err
 	}
 
+	defer res.Close()
+
 	var devices []tables.Device
 
 	for res.Next() {
 		var device tables.Device
-		if err := res.Scan(&device.Id, &device.Firmware_Id, &device.Product_Id, &device.Serial); err != nil {
+		if err := res.Scan(&device.Id, &device.Firmware_Id, &device.Product_Id, &device.Serial, &device.Api_Key); err != nil {
 			return nil, err
 		}
 
@@ -47,8 +47,13 @@ func GetDevice(id *int) ([]tables.Device, error) {
 
 }
 
-func AddDevice(id uint, serial uint, productId uint, fwId uint) error {
-	_, err := database.DB.Exec("insert into ? (id, serial, product_id, firmware_id) values (? ? ? ?)", tablesName.Devices, id, serial, productId, fwId)
+func AddDevice(serial string, productId uint, fwId uint) error {
+	api_key := uuid.New()
+	query := fmt.Sprintf("insert into %s (serial, product_id, firmware_id, api_key) values (%s, %d, %d, \"%s\")", tablesName.Devices, serial, productId, fwId, api_key)
+
+	println(query)
+
+	_, err := database.DB.Exec(query)
 
 	if err != nil {
 		return err
@@ -57,34 +62,39 @@ func AddDevice(id uint, serial uint, productId uint, fwId uint) error {
 	return nil
 }
 
-func UpdateDevice(p UpdateDeviceParams) error {
-	if p.ID == 0 {
+func UpdateDevice(
+	ID uint,
+	Serial *string,
+	ProductID *uint,
+	FirmwareID *uint,
+) error {
+	if ID == 0 {
 		return errors.New("device id is required")
 	}
 
 	updates := []string{}
 	args := []any{}
 
-	if p.Serial != nil {
+	if Serial != nil {
 		updates = append(updates, "serial = ?")
-		args = append(args, *p.Serial)
+		args = append(args, *Serial)
 	}
 
-	if p.ProductID != nil {
+	if ProductID != nil {
 		updates = append(updates, "product_id = ?")
-		args = append(args, *p.ProductID)
+		args = append(args, *ProductID)
 	}
 
-	if p.FirmwareID != nil {
+	if FirmwareID != nil {
 		updates = append(updates, "fw_id = ?")
-		args = append(args, *p.FirmwareID)
+		args = append(args, *FirmwareID)
 	}
 
 	if len(updates) == 0 {
 		return errors.New("no fields to update")
 	}
 
-	args = append(args, p.ID)
+	args = append(args, ID)
 
 	query := fmt.Sprintf(
 		"UPDATE devices SET %s WHERE id = ?",
@@ -93,4 +103,16 @@ func UpdateDevice(p UpdateDeviceParams) error {
 
 	_, err := database.DB.Exec(query, args...)
 	return err
+}
+
+func DeleteDevice(id uint) error {
+	query := fmt.Sprintf("delete from %s where id = ?", tablesName.Devices)
+
+	_, err := database.DB.Exec(query, id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

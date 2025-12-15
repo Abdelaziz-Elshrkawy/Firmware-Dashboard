@@ -1,7 +1,7 @@
 package controllers
 
-import "firmware_server/server"
+// import "firmware_server/server"
 
-func authRoute() {
-	var authGroup = server.App.Group()
-}
+// func authRoute() {
+// 	var authGroup = server.App.Group()
+// }

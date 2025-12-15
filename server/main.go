@@ -13,12 +13,16 @@ import (
 
 func main() {
 
+	// dtos.InitValidator()
+
 	// initializing database
 	database.Connect()
 
 	server.Init()
 
 	appMqtt.InitMqtt()
+
+	controllers.RegisterControllers()
 
 	server.App.Get("/", func(c fiber.Ctx) error {
 		return c.SendString("Hello")
@@ -27,8 +31,6 @@ func main() {
 	appMqtt.Client.Subscribe("test/topic", 0, func(client mqtt.Client, msg mqtt.Message) {
 		fmt.Printf("Received message on topic: %s: %s\n", msg.Topic(), string(msg.Payload()))
 	})
-
-	controllers.RegisterControllers()
 
 	if err := server.App.Listen(":3000"); err != nil {
 		fmt.Println("Server failed to start:", err)

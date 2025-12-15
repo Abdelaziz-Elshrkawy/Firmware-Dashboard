@@ -6,10 +6,11 @@ type Product struct {
 }
 
 type Device struct {
-	Id          uint `json:"id"`
-	Serial      uint `json:"serial"`
-	Product_Id  uint `json:"product_id"`
-	Firmware_Id uint `json:"firmware_id"`
+	Id          uint   `json:"id"`
+	Serial      string `json:"serial"`
+	Product_Id  uint   `json:"product_id"`
+	Firmware_Id uint   `json:"firmware_id"`
+	Api_Key     string `json:"api_key"`
 }
 
 type Firmwares struct {

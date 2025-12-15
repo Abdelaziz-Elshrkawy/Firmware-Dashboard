@@ -1,7 +1,6 @@
 package productService
 
 import (
-	"database/sql"
 	"firmware_server/database"
 	"firmware_server/tables"
 	"firmware_server/tables/tablesName"
@@ -9,14 +8,15 @@ import (
 )
 
 func GetProducts(id *int) ([]tables.Product, error) {
-	var res *sql.Rows
-	var err error
+	var query string
 
 	if id != nil {
-		res, err = database.DB.Query("select * from ? where id=?", tablesName.Products, id)
+		query = fmt.Sprintf("select * from %s where id=%d", tablesName.Products, *id)
 	} else {
-		res, err = database.DB.Query("select * from ?", tablesName.Products)
+		query = fmt.Sprintf("select * from %s", tablesName.Products)
 	}
+
+	res, err := database.DB.Query(query)
 
 	if err != nil {
 		return nil, err
@@ -43,9 +43,10 @@ func GetProducts(id *int) ([]tables.Product, error) {
 }
 
 func AddProduct(name string) error {
-	query := "insert into ? (name) VALUES (?)"
 
-	_, err := database.DB.Exec(query, tablesName.Products, name)
+	query := fmt.Sprintf("insert into %s (name) VALUES (?)", tablesName.Products)
+
+	_, err := database.DB.Exec(query, name)
 
 	if err != nil {
 		return err
@@ -55,9 +56,9 @@ func AddProduct(name string) error {
 }
 
 func UpdateProduct(id int, name string) error {
-	query := "update ? set name = ? where id = ?"
+	query := fmt.Sprintf("update %s set name = ? where id = ?", tablesName.Products)
 
-	res, err := database.DB.Exec(query, tablesName.Products, name, id)
+	res, err := database.DB.Exec(query, name, id)
 	if err != nil {
 		return err
 	}
@@ -66,9 +67,9 @@ func UpdateProduct(id int, name string) error {
 }
 
 func DeleteProduct(id int) error {
-	query := "delete from ? where id=?"
+	query := fmt.Sprintf("delete from %s where id=?", tablesName.Products)
 
-	_, err := database.DB.Exec(query, tablesName.Products, id)
+	_, err := database.DB.Exec(query, id)
 
 	if err != nil {
 		return err

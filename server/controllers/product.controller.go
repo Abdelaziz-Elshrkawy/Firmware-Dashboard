@@ -6,7 +6,6 @@ import (
 	"firmware_server/server"
 	"firmware_server/services/productService"
 	"firmware_server/utils"
-	"fmt"
 	"strconv"
 
 	"github.com/gofiber/fiber/v3"
@@ -21,9 +20,7 @@ func getProducts(c fiber.Ctx) error {
 		value, err := strconv.Atoi(query)
 
 		if err != nil {
-			return utils.ResponeConstructor(c, fiber.StatusBadRequest, fiber.Map{
-				"error": "invalid id query value",
-			})
+			return utils.BadRequestResponse(c, "invalid id query value")
 		}
 		id = &value
 	}
@@ -31,32 +28,27 @@ func getProducts(c fiber.Ctx) error {
 	products, sqlErr := productService.GetProducts(id)
 
 	if sqlErr != nil {
-		return utils.ResponeConstructor(c, fiber.StatusBadRequest, fiber.Map{
-			"error": sqlErr,
-		})
+		return utils.BadRequestResponse(c, sqlErr.Error())
 	}
 
-	return utils.ResponeConstructor(c, fiber.StatusOK, fiber.Map{"products": products})
+	return utils.ResponeConstructor(c, fiber.StatusOK, products)
 }
 
 func addProduct(c fiber.Ctx) error {
 	res, err := utils.ParseBody[productsDtos.AddProductBody](c)
-	fmt.Println(res, err)
+
 	if err != nil {
-		return c.JSON(fiber.Map{
-			"res": err.Error(),
-		})
+		return utils.BadRequestResponse(c, err.Error())
 	}
 
 	if res.Name == "" {
-		return c.JSON(fiber.Map{
-			"res": "Error product must have a name",
-		})
+		return utils.BadRequestResponse(c, "name is required")
 	}
 
 	sqlErr := productService.AddProduct(res.Name)
+
 	if sqlErr != nil {
-		return c.JSON(sqlErr)
+		return utils.BadRequestResponse(c, sqlErr.Error())
 	}
 
 	return utils.ResponeConstructor(c, fiber.StatusCreated, fiber.Map{
@@ -66,31 +58,22 @@ func addProduct(c fiber.Ctx) error {
 }
 
 func updateProduct(c fiber.Ctx) error {
-
 	body, err := utils.ParseBody[productsDtos.UpdateProductBody](c)
 
 	if err != nil {
-		return utils.ResponeConstructor(c, fiber.StatusBadRequest, fiber.Map{
-			"error": err.Error(),
-		})
+		return utils.BadRequestResponse(c, err.Error())
 	}
 
 	if body.Id == nil {
-		return utils.ResponeConstructor(c, fiber.StatusBadRequest, fiber.Map{
-			"error": "product id must not be empty",
-		})
+		return utils.BadRequestResponse(c, "product id must not be empty")
 	}
 
 	if body.Name == "" {
-		return utils.ResponeConstructor(c, fiber.StatusBadRequest, fiber.Map{
-			"error": "product name must not be empty",
-		})
+		return utils.BadRequestResponse(c, "product name must not be empty")
 	}
 
 	if err = productService.UpdateProduct(*body.Id, body.Name); err != nil {
-		return utils.ResponeConstructor(c, fiber.StatusBadRequest, fiber.Map{
-			"error": err.Error(),
-		})
+		return utils.BadRequestResponse(c, err.Error())
 	}
 
 	return utils.ResponeConstructor(c, fiber.StatusOK, fiber.Map{
@@ -102,21 +85,15 @@ func deleteProduct(c fiber.Ctx) error {
 	body, err := utils.ParseBody[productsDtos.DeleteProductBody](c)
 
 	if err != nil {
-		return utils.ResponeConstructor(c, fiber.StatusBadRequest, fiber.Map{
-			"error": err.Error(),
-		})
+		return utils.BadRequestResponse(c, err.Error())
 	}
 
 	if body.Id == nil {
-		return utils.ResponeConstructor(c, fiber.StatusBadRequest, fiber.Map{
-			"error": "product id must not be empty",
-		})
+		return utils.BadRequestResponse(c, "id is required")
 	}
 
 	if err = productService.DeleteProduct(*body.Id); err != nil {
-		return utils.ResponeConstructor(c, fiber.StatusInternalServerError, fiber.Map{
-			"error": "internal server error",
-		})
+		return utils.BadRequestResponse(c, err.Error())
 	}
 
 	return utils.ResponeConstructor(c, fiber.StatusOK, fiber.Map{
