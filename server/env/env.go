@@ -6,4 +6,5 @@ const (
 	DBname     = "products_firmware"
 	MqttPort   = 1883
 	MqttHost   = "localhost"
+	JWTSecert  = "bedo-firmware-app-jwt-secert"
 )

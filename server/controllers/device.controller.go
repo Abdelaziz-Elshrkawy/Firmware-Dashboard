@@ -13,10 +13,23 @@ import (
 
 func getDevice(c fiber.Ctx) error {
 	var id *int
-	query := c.Query("id")
+	var product_id int
+	pidQuery := c.Query("product_id")
+	idQuery := c.Query("id")
 
-	if query != "" {
-		value, err := strconv.Atoi(query)
+	if pidQuery == "" {
+		return utils.BadRequestResponse(c, "product_id query must be provided")
+	} else {
+		p_id, err := strconv.Atoi(pidQuery)
+
+		if err != nil {
+			return utils.BadRequestResponse(c, "invalid product_id query value")
+		}
+		product_id = p_id
+	}
+
+	if idQuery != "" {
+		value, err := strconv.Atoi(idQuery)
 		if err != nil {
 			return utils.BadRequestResponse(c,
 				"invalid id query value",
@@ -26,7 +39,7 @@ func getDevice(c fiber.Ctx) error {
 		id = &value
 	}
 
-	devices, sqlErr := deviceService.GetDevice(id)
+	devices, sqlErr := deviceService.GetDevice(product_id, id)
 
 	if sqlErr != nil {
 		return utils.BadRequestResponse(c, sqlErr.Error())

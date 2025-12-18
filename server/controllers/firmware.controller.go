@@ -51,6 +51,10 @@ func getFirmwares(c fiber.Ctx) error {
 	return utils.ResponeConstructor(c, fiber.StatusOK, firmwares)
 }
 
+// func updateFirmwareVersion(){
+
+// }
+
 func addFirmware(c fiber.Ctx) error {
 	body, err := utils.ParseBody[firmwareDtos.AddFirmwareBody](c)
 

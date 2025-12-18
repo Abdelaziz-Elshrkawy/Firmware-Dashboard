@@ -11,13 +11,13 @@ import (
 	"github.com/google/uuid"
 )
 
-func GetDevice(id *int) ([]tables.Device, error) {
+func GetDevice(product_id int, id *int) ([]tables.Device, error) {
 
 	var query string
 	if id != nil {
-		query = fmt.Sprintf("select id, firmware_id, product_id, serial, api_key from %s where id = %d", tablesName.Devices, *id)
+		query = fmt.Sprintf("select id, firmware_id, product_id, serial, api_key from %s where product_id = %d and id = %d", tablesName.Devices, product_id, *id)
 	} else {
-		query = fmt.Sprintf("select id, firmware_id, product_id, serial, api_key from %s", tablesName.Devices)
+		query = fmt.Sprintf("select id, firmware_id, product_id, serial, api_key from %s where product_id = %d", tablesName.Devices, product_id)
 	}
 
 	res, err := database.DB.Query(query)

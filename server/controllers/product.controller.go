@@ -26,7 +26,7 @@ func getProducts(c fiber.Ctx) error {
 	}
 
 	products, sqlErr := productService.GetProducts(id)
-
+	println("get request")
 	if sqlErr != nil {
 		return utils.BadRequestResponse(c, sqlErr.Error())
 	}
@@ -35,17 +35,17 @@ func getProducts(c fiber.Ctx) error {
 }
 
 func addProduct(c fiber.Ctx) error {
-	res, err := utils.ParseBody[productsDtos.AddProductBody](c)
+	body, err := utils.ParseBody[productsDtos.AddProductBody](c)
 
 	if err != nil {
 		return utils.BadRequestResponse(c, err.Error())
 	}
 
-	if res.Name == "" {
+	if body.Name == "" {
 		return utils.BadRequestResponse(c, "name is required")
 	}
 
-	sqlErr := productService.AddProduct(res.Name)
+	sqlErr := productService.AddProduct(body.Name)
 
 	if sqlErr != nil {
 		return utils.BadRequestResponse(c, sqlErr.Error())
