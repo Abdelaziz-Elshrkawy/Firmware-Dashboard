@@ -1,7 +1,10 @@
 package utils
 
 import (
+	"firmware_server/env"
+
 	"github.com/gofiber/fiber/v3"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func ParseBody[T any](c fiber.Ctx) (*T, error) {
@@ -14,7 +17,7 @@ func ParseBody[T any](c fiber.Ctx) (*T, error) {
 		return nil, err
 	}
 
-	// if err := dtos.DtoVlidator.Struct(temp); err != nil {
+	// if err := dtos.DtoValidator.Struct(temp); err != nil {
 	// 	validationErrors := dtos.FormatValidationErrors(err)
 	// 	return nil, validationErrors
 	// }
@@ -22,8 +25,12 @@ func ParseBody[T any](c fiber.Ctx) (*T, error) {
 	return &temp, nil
 }
 
-func ResponeConstructor(c fiber.Ctx, status int, res any) error {
-	c.SendStatus(status)
+func ResponseConstructor(c fiber.Ctx, status int, res any, cookies []fiber.Cookie) error {
+	c.Status(status)
+
+	for i := range cookies {
+		c.Cookie(&cookies[i])
+	}
 
 	return c.JSON(fiber.Map{
 		"res":    res,
@@ -32,7 +39,21 @@ func ResponeConstructor(c fiber.Ctx, status int, res any) error {
 }
 
 func BadRequestResponse(c fiber.Ctx, msg string) error {
-	return ResponeConstructor(c, fiber.StatusBadRequest, fiber.Map{
+	return ResponseConstructor(c, fiber.StatusBadRequest, fiber.Map{
 		"error": msg,
-	})
+	}, nil)
+}
+
+func CreatePassword(passwd string) ([]byte, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(passwd+env.PasswordSecret), bcrypt.DefaultCost)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return hash, nil
+}
+
+func ComparePassword(hash []byte, password string) error {
+	return bcrypt.CompareHashAndPassword(hash, []byte(password+env.PasswordSecret))
 }

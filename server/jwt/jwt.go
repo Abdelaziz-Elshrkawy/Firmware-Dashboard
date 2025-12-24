@@ -1,4 +1,4 @@
-package jwt
+package appJwt
 
 import (
 	"firmware_server/env"
@@ -16,7 +16,7 @@ type JWTConfig struct {
 }
 
 var JWT = JWTConfig{
-	Secret:     []byte(env.JWTSecert),
+	Secret:     []byte(env.JWTSecret),
 	Issuer:     "bedo-firmware-api",
 	Audience:   "bedo-firmware-client-side",
 	ExpireTime: time.Hour * 24,

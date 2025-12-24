@@ -7,13 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { X } from "lucide-react";
 import { useState, type Dispatch, type JSX, type SetStateAction } from "react";
-
-type ViewKey =
-  | "menu"
-  | "devicesList"
-  | "deviceEdit"
-  | "firmwaresList"
-  | "firmwareEdit";
+import { ViewKey } from "../types/adminDialog.d";
 
 export default function AdminDialog({
   open,
@@ -22,7 +16,7 @@ export default function AdminDialog({
   open: number | null;
   setOpen: Dispatch<SetStateAction<number | null>>;
 }) {
-  const [activeView, setActiveView] = useState<ViewKey>("menu");
+  const [activeView, setActiveView] = useState<ViewKey>(ViewKey.Menu);
   const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
   const [selectedFirmware, setSelectedFirmware] = useState<string | null>(null);
 
@@ -30,13 +24,13 @@ export default function AdminDialog({
     "flex flex-col gap-2 p-2 border-2 rounded-md shadow-md";
 
   const views: Record<ViewKey, JSX.Element> = {
-    menu: (
+    [ViewKey.Menu]: (
       <div className="flex flex-col gap-2">
         <div className={containerClass}>
           <Button
             className="cursor-pointer btn"
             onClick={() => {
-              setActiveView("devicesList");
+              setActiveView(ViewKey.DeviceList);
             }}
           >
             Devices
@@ -46,7 +40,7 @@ export default function AdminDialog({
         <div className={containerClass}>
           <Button
             className="cursor-pointer btn"
-            onClick={() => setActiveView("firmwaresList")}
+            onClick={() => setActiveView(ViewKey.FirmwaresList)}
           >
             Firmwares
           </Button>
@@ -54,7 +48,7 @@ export default function AdminDialog({
         </div>
       </div>
     ),
-    devicesList: (
+    [ViewKey.DeviceList]: (
       <div>
         {["Device 1", "Device 2"].map((d) => (
           <div key={d} className="flex justify-between mb-2">
@@ -63,7 +57,7 @@ export default function AdminDialog({
               className="cursor-pointer btn btn-sm"
               onClick={() => {
                 setSelectedDevice(d);
-                setActiveView("deviceEdit");
+                setActiveView(ViewKey.DeviceEdit);
               }}
             >
               Edit
@@ -72,24 +66,24 @@ export default function AdminDialog({
         ))}
         <Button
           className="mt-2 cursor-pointer btn"
-          onClick={() => setActiveView("menu")}
+          onClick={() => setActiveView(ViewKey.Menu)}
         >
           Back
         </Button>
       </div>
     ),
-    deviceEdit: (
+    [ViewKey.DeviceEdit]: (
       <div>
         <p>Editing {selectedDevice}</p>
         <Button
           className="mt-2 cursor-pointer btn"
-          onClick={() => setActiveView("devicesList")}
+          onClick={() => setActiveView(ViewKey.DeviceList)}
         >
           Back to List
         </Button>
       </div>
     ),
-    firmwaresList: (
+    [ViewKey.FirmwaresList]: (
       <div>
         {["Firmware 1", "Firmware 2"].map((f) => (
           <div key={f} className="flex justify-between mb-2">
@@ -98,7 +92,7 @@ export default function AdminDialog({
               className="cursor-pointer btn btn-sm"
               onClick={() => {
                 setSelectedFirmware(f);
-                setActiveView("firmwareEdit");
+                setActiveView(ViewKey.FirmwareEdit);
               }}
             >
               Edit
@@ -107,18 +101,18 @@ export default function AdminDialog({
         ))}
         <Button
           className="mt-2 cursor-pointer btn"
-          onClick={() => setActiveView("menu")}
+          onClick={() => setActiveView(ViewKey.Menu)}
         >
           Back
         </Button>
       </div>
     ),
-    firmwareEdit: (
+    [ViewKey.FirmwareEdit]: (
       <div>
         <p>Editing {selectedFirmware}</p>
         <Button
           className="mt-2 cursor-pointer btn"
-          onClick={() => setActiveView("firmwaresList")}
+          onClick={() => setActiveView(ViewKey.FirmwaresList)}
         >
           Back to List
         </Button>
@@ -135,7 +129,7 @@ export default function AdminDialog({
             <X
               onClick={() => {
                 setOpen(null);
-                setActiveView("menu");
+                setActiveView(ViewKey.Menu);
               }}
               className="font-bold transition-all cursor-pointer hover:text-red-500"
             />

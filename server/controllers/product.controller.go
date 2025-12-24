@@ -26,12 +26,12 @@ func getProducts(c fiber.Ctx) error {
 	}
 
 	products, sqlErr := productService.GetProducts(id)
-	println("get request")
+
 	if sqlErr != nil {
 		return utils.BadRequestResponse(c, sqlErr.Error())
 	}
 
-	return utils.ResponeConstructor(c, fiber.StatusOK, products)
+	return utils.ResponseConstructor(c, fiber.StatusOK, products, nil)
 }
 
 func addProduct(c fiber.Ctx) error {
@@ -51,9 +51,11 @@ func addProduct(c fiber.Ctx) error {
 		return utils.BadRequestResponse(c, sqlErr.Error())
 	}
 
-	return utils.ResponeConstructor(c, fiber.StatusCreated, fiber.Map{
+	return utils.ResponseConstructor(c, fiber.StatusCreated, fiber.Map{
 		"message": "Product added successfully",
-	})
+	},
+		nil,
+	)
 
 }
 
@@ -76,9 +78,9 @@ func updateProduct(c fiber.Ctx) error {
 		return utils.BadRequestResponse(c, err.Error())
 	}
 
-	return utils.ResponeConstructor(c, fiber.StatusOK, fiber.Map{
+	return utils.ResponseConstructor(c, fiber.StatusOK, fiber.Map{
 		"message": "product updated",
-	})
+	},nil)
 }
 
 func deleteProduct(c fiber.Ctx) error {
@@ -96,9 +98,9 @@ func deleteProduct(c fiber.Ctx) error {
 		return utils.BadRequestResponse(c, err.Error())
 	}
 
-	return utils.ResponeConstructor(c, fiber.StatusOK, fiber.Map{
+	return utils.ResponseConstructor(c, fiber.StatusOK, fiber.Map{
 		"message": "deleted",
-	})
+	},nil)
 }
 
 func productRoute() {

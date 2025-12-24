@@ -1,5 +1,5 @@
 import { routes } from "@/app/router";
-import { Button } from "@/components/ui/button"; // Shadcn Button
+import { Button } from "@/components/ui/button";
 import { ArrowLeftCircle } from "lucide-react";
 import { useNavigate } from "react-router";
 

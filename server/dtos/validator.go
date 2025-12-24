@@ -2,10 +2,10 @@ package dtos
 
 import "gopkg.in/go-playground/validator.v9"
 
-var DtoVlidator *validator.Validate
+var DtoValidator *validator.Validate
 
 func InitValidator() {
-	DtoVlidator = validator.New()
+	DtoValidator = validator.New()
 }
 
 func FormatValidationErrors(err error) []string {

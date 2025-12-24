@@ -18,3 +18,9 @@ type Firmwares struct {
 	Version    string `json:"version"`
 	Product_Id uint   `json:"product_id"`
 }
+
+type Users struct {
+	Id       uint   `json:"id"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+}

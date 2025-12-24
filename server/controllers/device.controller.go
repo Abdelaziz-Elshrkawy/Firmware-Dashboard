@@ -45,7 +45,7 @@ func getDevice(c fiber.Ctx) error {
 		return utils.BadRequestResponse(c, sqlErr.Error())
 	}
 
-	return utils.ResponeConstructor(c, fiber.StatusOK, devices)
+	return utils.ResponseConstructor(c, fiber.StatusOK, devices, nil)
 }
 
 func addDevice(c fiber.Ctx) error {
@@ -63,7 +63,7 @@ func addDevice(c fiber.Ctx) error {
 		return utils.BadRequestResponse(c, err.Error())
 	}
 
-	return utils.ResponeConstructor(c, fiber.StatusCreated, "Device added successfully")
+	return utils.ResponseConstructor(c, fiber.StatusCreated, "Device added successfully", nil)
 
 }
 
@@ -79,7 +79,7 @@ func updateDevice(c fiber.Ctx) error {
 	if err != nil {
 		return utils.BadRequestResponse(c, err.Error())
 	}
-	return utils.ResponeConstructor(c, fiber.StatusOK, "Device updated successfully")
+	return utils.ResponseConstructor(c, fiber.StatusOK, "Device updated successfully", nil)
 }
 
 func deleteDevice(c fiber.Ctx) error {
@@ -99,9 +99,9 @@ func deleteDevice(c fiber.Ctx) error {
 		return utils.BadRequestResponse(c, err.Error())
 	}
 
-	return utils.ResponeConstructor(c, fiber.StatusOK, fiber.Map{
+	return utils.ResponseConstructor(c, fiber.StatusOK, fiber.Map{
 		"message": "Device deleted successfully",
-	})
+	}, nil)
 }
 
 func devicesRoute() {

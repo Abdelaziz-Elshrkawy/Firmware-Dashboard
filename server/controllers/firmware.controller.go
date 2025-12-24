@@ -15,12 +15,12 @@ func getFirmwares(c fiber.Ctx) error {
 	var id *uint
 	var product_id *uint
 	idQuery := c.Query("id")
-	produtIdQuery := c.Query("product_id")
-	println(produtIdQuery)
-	if produtIdQuery == "" {
+	productIdQuery := c.Query("product_id")
+
+	if productIdQuery == "" {
 		return utils.BadRequestResponse(c, "invalid query values")
 	} else {
-		value, err := strconv.Atoi(produtIdQuery)
+		value, err := strconv.Atoi(productIdQuery)
 		if err != nil {
 			return utils.BadRequestResponse(c,
 				"invalid id query value",
@@ -48,7 +48,7 @@ func getFirmwares(c fiber.Ctx) error {
 		return err
 	}
 
-	return utils.ResponeConstructor(c, fiber.StatusOK, firmwares)
+	return utils.ResponseConstructor(c, fiber.StatusOK, firmwares,nil)
 }
 
 // func updateFirmwareVersion(){
@@ -67,7 +67,7 @@ func addFirmware(c fiber.Ctx) error {
 		return utils.BadRequestResponse(c, err.Error())
 	}
 
-	return utils.ResponeConstructor(c, fiber.StatusOK, "Firmware added successfully")
+	return utils.ResponseConstructor(c, fiber.StatusOK, "Firmware added successfully",nil)
 }
 
 func updateFirmware(c fiber.Ctx) error {
@@ -83,7 +83,7 @@ func updateFirmware(c fiber.Ctx) error {
 		return utils.BadRequestResponse(c, err.Error())
 	}
 
-	return utils.ResponeConstructor(c, fiber.StatusOK, "Firmware updted successfully")
+	return utils.ResponseConstructor(c, fiber.StatusOK, "Firmware updated successfully",nil)
 }
 
 func deleteFirmware(c fiber.Ctx) error {
@@ -99,7 +99,7 @@ func deleteFirmware(c fiber.Ctx) error {
 		return utils.BadRequestResponse(c, err.Error())
 	}
 
-	return utils.ResponeConstructor(c, fiber.StatusOK, "firmware deleted successfully")
+	return utils.ResponseConstructor(c, fiber.StatusOK, "firmware deleted successfully",nil)
 }
 
 func firmwareRoute() {
